@@ -1,4 +1,4 @@
-package decstree
+package seltree
 
 import (
 	"errors"
@@ -42,11 +42,10 @@ func (n *sampleNode) SetState(state NodeState) INode {
 }
 
 func (n *sampleNode) ask() interface{} {
-	// println(n.uuid + " @(" + strconv.Itoa(n.position) + ") " + "ask for something")
+	// 先返回随机数，之后变更为节点询问的自定义函数体的调用
+	time.Sleep(time.Nanosecond * 2500)
 	rand.Seed(time.Now().UnixNano())
-	answer := rand.Intn(11)
-	time.Sleep(time.Second)
-	// println(n.uuid + " @(" + strconv.Itoa(n.position) + ") " + "ans=" + strconv.Itoa(answer))
+	answer := rand.Intn(100)
 	return answer
 }
 
@@ -54,17 +53,14 @@ func (n *sampleNode) judge(args []interface{}) bool {
 	if n.judgement == nil {
 		panic(errors.New(`this node without judgement`))
 	}
-	// println(n.uuid + " @(" + strconv.Itoa(n.position) + ") " + "judge something by args")
 	return n.judgement(n, args)
 }
 
-func (n *sampleNode) make(tree *DecsTree, args []interface{}) INode {
-	// println(n.uuid + " @(" + strconv.Itoa(n.position) + ") " + "make ... ")
-
+func (n *sampleNode) poll(tree *SelTree, args []interface{}) INode {
 	var total = len(n.choices)
 	var remain = total
 
-	var decsionPos = -1
+	var successPos = -1
 	for remain > 0 {
 		for idx := 0; idx < total; idx++ {
 			pos := n.choices[idx]
@@ -82,17 +78,17 @@ func (n *sampleNode) make(tree *DecsTree, args []interface{}) INode {
 			}
 
 			if node.judge(args) {
-				decsionPos = pos
+				successPos = pos
 				break
 			}
 
 		}
 	}
 
-	if decsionPos == -1 {
+	if successPos == -1 {
 		return nil
 	}
-	return tree.index(decsionPos)
+	return tree.index(successPos)
 }
 
 // 获取当前节点在树上的位置
@@ -125,7 +121,7 @@ func (n *sampleNode) add(pos int) bool {
 	return found
 }
 
-// 节点身份证
+// 节点身份
 func (n sampleNode) identify() interface{} {
 	return n.uuid
 }

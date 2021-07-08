@@ -1,6 +1,6 @@
-package decstree
+package seltree
 
-const MaxAskTimes = 10         // 一次决策中，被询问的最大次数
+const MaxAskTimes = 10         // 一次poll中，被询问的最大次数
 const NodePositionUnknown = -1 // 未定义位置
 
 type NodeState int

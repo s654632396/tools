@@ -1,12 +1,12 @@
-package decstree
+package seltree
 
 import (
 	"context"
 	"errors"
 )
 
-// DecsTree 决策树
-type DecsTree struct {
+// SelTree 选择树
+type SelTree struct {
 	// global variable
 	ctx *context.Context
 
@@ -21,7 +21,7 @@ type DecsTree struct {
 type Judgement func(self INode, args []interface{}) bool
 
 // Init 设置root节点
-func (dt *DecsTree) Init(root INode) *DecsTree {
+func (dt *SelTree) Init(root INode) *SelTree {
 	if dt.nodes != nil || len(dt.nodes) != 0 {
 		panic(errors.New(`root node already exists`))
 	}
@@ -36,7 +36,7 @@ func (dt *DecsTree) Init(root INode) *DecsTree {
 	return dt
 }
 
-func (dt *DecsTree) Link(parent, child INode) {
+func (dt *SelTree) Link(parent, child INode) {
 	var found bool
 	for _, find := range dt.nodes {
 		if find.identify() == child {
@@ -54,7 +54,7 @@ func (dt *DecsTree) Link(parent, child INode) {
 
 // 查询节点在树上的位置
 // 如果没查到，则返回 NodePositionUnknown
-func (dt *DecsTree) lookup(target INode) int {
+func (dt *SelTree) lookup(target INode) int {
 	for idx, node := range dt.nodes {
 		if node.identify() == target.identify() {
 			target.setPos(idx)
@@ -64,7 +64,7 @@ func (dt *DecsTree) lookup(target INode) int {
 	return target.pos()
 }
 
-func (dt *DecsTree) Start() {
+func (dt *SelTree) Start() {
 	var node = dt.current()
 
 	for {
@@ -72,7 +72,7 @@ func (dt *DecsTree) Start() {
 		// ask for arguments
 		answer := node.ask()
 		// make decisions and get next node
-		node = node.make(dt, []interface{}{answer, "yet_another_argument"})
+		node = node.poll(dt, []interface{}{answer, "yet_another_argument"})
 		if node == nil {
 			break
 		}
@@ -82,7 +82,7 @@ func (dt *DecsTree) Start() {
 }
 
 // current 获取当前节点
-func (dt *DecsTree) current() INode {
+func (dt *SelTree) current() INode {
 	var pointer = dt.pointer
 	if len(dt.nodes) < pointer {
 		panic(errors.New(`unexpected pointer called`))
@@ -90,7 +90,7 @@ func (dt *DecsTree) current() INode {
 	return dt.nodes[pointer]
 }
 
-func (dt *DecsTree) index(pos int) INode {
+func (dt *SelTree) index(pos int) INode {
 	if len(dt.nodes) <= pos {
 		return nil
 	}
@@ -104,10 +104,10 @@ type INode interface {
 	// SetState 提供变更节点的状态
 	SetState(state NodeState) INode
 
-	// ask 询问，获取本次决策的入参
+	// ask 询问，获取poll前的入参
 	ask() interface{}
-	// make 做决策，轮询子节点, 满足条件则发动跳转，选出要移动目标的子节点
-	make(tree *DecsTree, args []interface{}) INode
+	// poll 开始询问子节点, 满足条件则发动跳转，选出要移动目标的子节点
+	poll(tree *SelTree, args []interface{}) INode
 	// judge 用来判断条件是否成立
 	judge(args []interface{}) bool
 	// add 用position 来添加一个 choice
@@ -123,3 +123,7 @@ type INode interface {
 	// askCount 节点询问数自增, 并返回节点询问次数
 	askCount() int
 }
+
+//IInput 输入接口
+// TODO
+type IInput interface{}

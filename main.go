@@ -48,7 +48,7 @@ func myJudgement() seltree.Judgement {
 		if arg1, ok = args[0].(int); !ok {
 			println("arg1 invalid")
 		}
-		println(arg1)
+		// println(arg1)
 
 		self.SetState(seltree.NodeStateAsked)
 

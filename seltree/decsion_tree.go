@@ -18,7 +18,7 @@ type SelTree struct {
 }
 
 // Judgement 节点判断函数结构体
-type Judgement func(self INode, args []interface{}) bool
+type Judgement func(self INode, args []IInput) bool
 
 // Init 设置root节点
 func (dt *SelTree) Init(root INode) *SelTree {
@@ -72,7 +72,7 @@ func (dt *SelTree) Start() {
 		// ask for arguments
 		answer := node.ask()
 		// make decisions and get next node
-		node = node.poll(dt, []interface{}{answer, "yet_another_argument"})
+		node = node.poll(dt, []IInput{answer, "yet_another_argument"})
 		if node == nil {
 			break
 		}
@@ -105,11 +105,11 @@ type INode interface {
 	SetState(state NodeState) INode
 
 	// ask 询问，获取poll前的入参
-	ask() interface{}
+	ask() IInput
 	// poll 开始询问子节点, 满足条件则发动跳转，选出要移动目标的子节点
-	poll(tree *SelTree, args []interface{}) INode
+	poll(tree *SelTree, args []IInput) INode
 	// judge 用来判断条件是否成立
-	judge(args []interface{}) bool
+	judge(args []IInput) bool
 	// add 用position 来添加一个 choice
 	add(pos int) bool
 	// pos 获取当前节点在树上的位置

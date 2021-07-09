@@ -22,7 +22,7 @@ func NewSampleNode() *sampleNode {
 		uuid:     uuid.NewString(),
 		position: NodePositionUnknown,
 		choices:  make([]int, 0),
-		judgement: func(self INode, args []interface{}) bool {
+		judgement: func(self INode, args []IInput) bool {
 			// default judgement ,always return false
 			return false
 		},
@@ -41,7 +41,7 @@ func (n *sampleNode) SetState(state NodeState) INode {
 	return n
 }
 
-func (n *sampleNode) ask() interface{} {
+func (n *sampleNode) ask() IInput {
 	// 先返回随机数，之后变更为节点询问的自定义函数体的调用
 	time.Sleep(time.Nanosecond * 2500)
 	rand.Seed(time.Now().UnixNano())
@@ -49,14 +49,14 @@ func (n *sampleNode) ask() interface{} {
 	return answer
 }
 
-func (n *sampleNode) judge(args []interface{}) bool {
+func (n *sampleNode) judge(args []IInput) bool {
 	if n.judgement == nil {
 		panic(errors.New(`this node without judgement`))
 	}
 	return n.judgement(n, args)
 }
 
-func (n *sampleNode) poll(tree *SelTree, args []interface{}) INode {
+func (n *sampleNode) poll(tree *SelTree, args []IInput) INode {
 	var total = len(n.choices)
 	var remain = total
 

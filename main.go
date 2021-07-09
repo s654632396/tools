@@ -39,7 +39,7 @@ func main() {
 }
 
 func myJudgement() seltree.Judgement {
-	return func(self seltree.INode, args []interface{}) bool {
+	return func(self seltree.INode, args []seltree.IInput) bool {
 
 		var (
 			arg1 int

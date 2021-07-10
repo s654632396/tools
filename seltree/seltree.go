@@ -3,7 +3,7 @@ package seltree
 import (
 	"context"
 	"errors"
-	"fmt"
+	"log"
 )
 
 // SelTree 选择树
@@ -48,7 +48,16 @@ func (dt *SelTree) Init(root INode) *SelTree {
 	return dt
 }
 
-func (dt *SelTree) Link(parent, child INode) {
+// Link 链接 parentNode 和 childNodes
+// children 为复数不确定节点
+func (dt *SelTree) Link(parent INode, children ...INode)  {
+	for _, child := range children {
+		dt.link(parent, child)
+	}
+}
+
+// link 链接 parentNode 和 1个childNode
+func (dt *SelTree) link(parent, child INode) {
 	var found bool
 	for _, find := range dt.nodes {
 		if find.getId() == child {
@@ -82,19 +91,21 @@ func (dt *SelTree) Start() {
 	for {
 		// ask for arguments
 		answer := node.ask()
-		print(">>>> asked: ")
-		fmt.Printf("%#v\n", answer)
+
+		log.Print(">>>> asked: ")
+		log.Printf("%#v\n", answer)
+
 		if answer == nil {
 			panic(`answer invalid: nil`)
 		}
 		// make decisions and get next node
-		node = node.poll(dt, []IInput{answer, StringInput{value: "yet_another_argument"}})
+		node = node.poll(dt, []IInput{answer, StringInput{value: "yet another argument"}})
 		if node == nil {
 			break
 		}
 	}
 
-	println("done.")
+	log.Println("seltree is done.")
 }
 
 // current 获取当前节点

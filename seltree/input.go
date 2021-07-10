@@ -8,7 +8,7 @@ func (receiver EmptyInput) IsEmpty() bool {
 	return true
 }
 
-func (EmptyInput) ResolveValue(expect interface{}) (err error)  {
+func (EmptyInput) Resolve(interface{}) (err error)  {
 	// don't modify expect
 	// 这是空输入参数
 	// 单纯形式上继承IInput
@@ -19,33 +19,6 @@ type NotEmptyInput struct {}
 
 func (receiver NotEmptyInput) IsEmpty() bool {
 	return false
-}
-
-/*
-对Input参数的解析：
-```go
-	var myInput seltree.IInput
-	myInput = seltree.NewInput("this is my string input argument")
-
-	var expectValue string
-	if err := myInput.ResolveValue(&expectValue); err!= nil {
-		expectValue = "default values"
-	}
-	println("test for input:", expectValue)
-```
-
-从这里开始补充添加想要基本类型的Input参数结构体
-...
- */
-
-type StringInput struct {
-	value string
-	NotEmptyInput
-}
-
-type IntInput struct {
-	value int
-	NotEmptyInput
 }
 
 
@@ -63,9 +36,13 @@ func NewInput(value interface{}) IInput {
 	}
 }
 
+// StringInput wrapper of string value Input argument
+type StringInput struct {
+	value string
+	NotEmptyInput
+}
 
-
-func (i StringInput) ResolveValue(expect interface{}) (err error) {
+func (i StringInput) Resolve(expect interface{}) (err error) {
 	if v ,ok := expect.(*string); ok {
 		*v = i.value
 	} else {
@@ -73,7 +50,13 @@ func (i StringInput) ResolveValue(expect interface{}) (err error) {
 	}
 	return
 }
-func (i IntInput) ResolveValue(expect interface{}) (err error) {
+
+type IntInput struct {
+	value int
+	NotEmptyInput
+}
+
+func (i IntInput) Resolve(expect interface{}) (err error) {
 	if v ,ok := expect.(*int); ok {
 		*v = i.value
 	} else {

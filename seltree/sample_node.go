@@ -12,9 +12,16 @@ type sampleNode struct {
 	uuid      string
 	position  int
 	choices   []int
-	judgement Judgement
+
+	// 提问函数体, 由ask调用
+	quest	Quest
+	// 判断函数体, 由poll调用
+	judge	Judge
+
+	// 节点状态
 	state     NodeState
-	askTries  int
+	// 每次poll中的尝试次数
+	attempt int
 }
 
 func NewSampleNode() *sampleNode {
@@ -22,16 +29,22 @@ func NewSampleNode() *sampleNode {
 		uuid:     uuid.NewString(),
 		position: NodePositionUnknown,
 		choices:  make([]int, 0),
-		judgement: func(self INode, args []IInput) bool {
+		judge: func(self INode, args []IInput) bool {
 			// default judgement ,always return false
 			return false
 		},
 	}
 }
+func (n *sampleNode) Register(registerFunc IRegisterFunc) INode {
+	switch f := registerFunc.(type) {
+	case Quest:
+		n.quest = f
+	case Judge:
+		n.judge = f
+	default:
+		panic(`unknown register func`)
+	}
 
-// Register 注册节点的判断逻辑
-func (n *sampleNode) Register(judgement Judgement) INode {
-	n.judgement = judgement
 	return n
 }
 
@@ -43,17 +56,18 @@ func (n *sampleNode) SetState(state NodeState) INode {
 
 func (n *sampleNode) ask() IInput {
 	// 先返回随机数，之后变更为节点询问的自定义函数体的调用
+	// TODO : call node.quest here
 	time.Sleep(time.Nanosecond * 2500)
 	rand.Seed(time.Now().UnixNano())
 	answer := rand.Intn(100)
 	return answer
 }
 
-func (n *sampleNode) judge(args []IInput) bool {
-	if n.judgement == nil {
-		panic(errors.New(`this node without judgement`))
+func (n *sampleNode) determine(args []IInput) bool {
+	if n.judge == nil {
+		panic(errors.New(`this node without judge`))
 	}
-	return n.judgement(n, args)
+	return n.judge(n, args)
 }
 
 func (n *sampleNode) poll(tree *SelTree, args []IInput) INode {
@@ -72,12 +86,12 @@ func (n *sampleNode) poll(tree *SelTree, args []IInput) INode {
 				remain--
 				continue
 			}
-			if node.askCount() >= MaxAskTimes {
+			if node.attempts() >= MaxAskTimes {
 				remain--
 				continue
 			}
 
-			if node.judge(args) {
+			if node.determine(args) {
 				successPos = pos
 				break
 			}
@@ -92,7 +106,7 @@ func (n *sampleNode) poll(tree *SelTree, args []IInput) INode {
 }
 
 // 获取当前节点在树上的位置
-func (n sampleNode) pos() int {
+func (n sampleNode) getPos() int {
 	return n.position
 }
 
@@ -122,7 +136,7 @@ func (n *sampleNode) add(pos int) bool {
 }
 
 // 节点身份
-func (n sampleNode) identify() interface{} {
+func (n sampleNode) getId() interface{} {
 	return n.uuid
 }
 
@@ -130,7 +144,7 @@ func (n *sampleNode) getState() NodeState {
 	return n.state
 }
 
-func (n *sampleNode) askCount() int {
-	n.askTries++
-	return n.askTries
+func (n *sampleNode) attempts() int {
+	n.attempt++
+	return n.attempt
 }

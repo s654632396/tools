@@ -17,8 +17,22 @@ type SelTree struct {
 	nodes []INode
 }
 
-// Judgement 节点判断函数结构体
-type Judgement func(self INode, args []IInput) bool
+type IRegisterFunc interface {
+	RfType()  RegisterFuncType
+}
+
+// Quest Ask提问函数结构体
+type Quest func(self INode, args []IInput)
+// Judge 节点判断函数结构体
+type Judge func(self INode, args []IInput) bool
+
+func (Quest) RfType() RegisterFuncType  {
+	return RegisterFuncTypeQuest
+}
+
+func (Judge) RfType() RegisterFuncType  {
+	return RegisterFuncTypeJudge
+}
 
 // Init 设置root节点
 func (dt *SelTree) Init(root INode) *SelTree {
@@ -39,7 +53,7 @@ func (dt *SelTree) Init(root INode) *SelTree {
 func (dt *SelTree) Link(parent, child INode) {
 	var found bool
 	for _, find := range dt.nodes {
-		if find.identify() == child {
+		if find.getId() == child {
 			found = true
 			break
 		}
@@ -48,7 +62,7 @@ func (dt *SelTree) Link(parent, child INode) {
 		dt.nodes = append(dt.nodes, child)
 	}
 	dt.lookup(child)
-	parent.add(child.pos())
+	parent.add(child.getPos())
 	return
 }
 
@@ -56,12 +70,12 @@ func (dt *SelTree) Link(parent, child INode) {
 // 如果没查到，则返回 NodePositionUnknown
 func (dt *SelTree) lookup(target INode) int {
 	for idx, node := range dt.nodes {
-		if node.identify() == target.identify() {
+		if node.getId() == target.getId() {
 			target.setPos(idx)
 			break
 		}
 	}
-	return target.pos()
+	return target.getPos()
 }
 
 func (dt *SelTree) Start() {
@@ -100,7 +114,7 @@ func (dt *SelTree) index(pos int) INode {
 //INode 节点接口
 type INode interface {
 	// Register 提供注册节点判断流程的函数体
-	Register(judgement Judgement) INode
+	Register(registerFunc IRegisterFunc) INode
 	// SetState 提供变更节点的状态
 	SetState(state NodeState) INode
 
@@ -108,20 +122,20 @@ type INode interface {
 	ask() IInput
 	// poll 开始询问子节点, 满足条件则发动跳转，选出要移动目标的子节点
 	poll(tree *SelTree, args []IInput) INode
-	// judge 用来判断条件是否成立
-	judge(args []IInput) bool
+	// determine 用来判断条件是否成立
+	determine(args []IInput) bool
 	// add 用position 来添加一个 choice
 	add(pos int) bool
-	// pos 获取当前节点在树上的位置
-	pos() int
+	// getPos 获取当前节点在树上的位置
+	getPos() int
 	// setPos 获取当前节点在树上的位置
 	setPos(pos int)
-	// identify 获取当前节点的唯一身份
-	identify() interface{}
+	// getId 获取当前节点的唯一身份
+	getId() interface{}
 	// getState 获取节点状态
 	getState() NodeState
-	// askCount 节点询问数自增, 并返回节点询问次数
-	askCount() int
+	// attempts 节点询问数自增, 并返回节点尝试次数
+	attempts() int
 }
 
 //IInput 输入接口

@@ -38,7 +38,7 @@ func main() {
 	tree.Start()
 }
 
-func myJudgement() seltree.Judgement {
+func myJudgement() seltree.Judge {
 	return func(self seltree.INode, args []seltree.IInput) bool {
 
 		var (

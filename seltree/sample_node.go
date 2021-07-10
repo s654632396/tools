@@ -78,6 +78,7 @@ func (n *sampleNode) poll(tree *SelTree, args []IInput) INode {
 	var remain = total
 
 	var successPos = -1
+	FOUND:
 	for remain > 0 {
 		for idx := 0; idx < total; idx++ {
 			pos := n.choices[idx]
@@ -96,7 +97,7 @@ func (n *sampleNode) poll(tree *SelTree, args []IInput) INode {
 
 			if node.determine(args) {
 				successPos = pos
-				break
+				break FOUND
 			}
 
 		}

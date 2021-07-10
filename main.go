@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	testInput()
 	// test
 	// 初始化树 & 根节点
 	tree := new(seltree.SelTree)
@@ -38,6 +39,17 @@ func main() {
 
 	// 运行树
 	tree.Start()
+}
+
+func testInput()  {
+	var myInput seltree.IInput
+	myInput = seltree.NewInput("this is my string input argument")
+
+	var expectValue string
+	if err := myInput.ResolveValue(&expectValue); err!= nil {
+		expectValue = "default values"
+	}
+	println("test for input:", expectValue)
 }
 
 func myJudgement() seltree.Judge {

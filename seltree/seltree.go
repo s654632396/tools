@@ -18,9 +18,6 @@ type SelTree struct {
 	nodes []INode
 }
 
-type IRegisterFunc interface {
-	RfType()  RegisterFuncType
-}
 
 // Quest Ask提问函数结构体
 type Quest func(...IInput) (answer IInput)
@@ -114,100 +111,4 @@ func (dt *SelTree) index(pos int) INode {
 		return nil
 	}
 	return dt.nodes[pos]
-}
-
-//INode 节点接口
-type INode interface {
-	// Register 提供注册节点判断流程的函数体
-	Register(registerFunc IRegisterFunc) INode
-	// SetState 提供变更节点的状态
-	SetState(state NodeState) INode
-
-	// ask 询问，获取poll前的入参
-	ask() IInput
-	// poll 开始询问子节点, 满足条件则发动跳转，选出要移动目标的子节点
-	poll(tree *SelTree, args []IInput) INode
-	// determine 用来判断条件是否成立
-	determine(args []IInput) bool
-	// add 用position 来添加一个 choice
-	add(pos int) bool
-	// getPos 获取当前节点在树上的位置
-	getPos() int
-	// setPos 获取当前节点在树上的位置
-	setPos(pos int)
-	// getId 获取当前节点的唯一身份
-	getId() interface{}
-	// getState 获取节点状态
-	getState() NodeState
-	// attempts 节点询问数自增, 并返回节点尝试次数
-	attempts() int
-}
-
-//IInput 输入接口
-// TODO
-type IInput interface{
-	ResolveValue(interface{}) error
-	IsEmpty() bool
-}
-
-
-
-type EmptyInput struct {}
-type NotEmptyInput struct {}
-
-func (receiver EmptyInput) IsEmpty() bool {
-	return true
-}
-func (receiver NotEmptyInput) IsEmpty() bool {
-	return false
-}
-
-type StringInput struct {
-	value string
-	NotEmptyInput
-}
-
-type IntInput struct {
-	value int
-	NotEmptyInput
-}
-
-
-func NewInput(value interface{}) IInput {
-	empty := EmptyInput{}
-	switch v := value.(type) {
-	case int:
-		return  IntInput{ value: v}
-	case string:
-		return  StringInput{ value: v}
-	case nil:
-		return  empty
-	default:
-		panic(`value type not support now`)
-	}
-}
-
-
-func (EmptyInput) ResolveValue(expect interface{}) (err error)  {
-	// don't modify expect
-	// 这是空输入参数
-	// 单纯形式上继承IInput
-	return
-}
-
-func (i StringInput) ResolveValue(expect interface{}) (err error) {
-	if v ,ok := expect.(*string); ok {
-		*v = i.value
-	} else {
-		err = errors.New(`resolve string get unexpected value`)
-	}
-	return
-}
-func (i IntInput) ResolveValue(expect interface{}) (err error) {
-	if v ,ok := expect.(*int); ok {
-		*v = i.value
-	} else {
-		err = errors.New(`resolve int get unexpected value`)
-	}
-	return
 }

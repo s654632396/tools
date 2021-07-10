@@ -1,13 +1,16 @@
 package seltree
 
-import "testing"
+import (
+	"testing"
+)
 
 // 声明 IInput 实体
 var myInput IInput
 
 func TestStringInput_Resolve(t *testing.T) {
 	// 使用string类型的input
-	myInput = NewInput("this is my string input argument")
+	var origin = "this is my string input argument"
+	myInput = NewInput(origin)
 
 	// 将myInput实体的值解析到一个期望是string类型的变量上
 	var expectString string
@@ -15,7 +18,21 @@ func TestStringInput_Resolve(t *testing.T) {
 		t.Error(err)
 		t.Fail()
 	}
+	if origin != expectString {
+		t.Error(`string value not equal`)
+		t.Fail()
+	}
 }
+
+type (
+	OtherThing struct {
+		todo string
+	}
+	AnyThing struct {
+		Desc  string
+		other OtherThing
+	}
+)
 
 func TestIntInput_Resolve(t *testing.T) {
 	// 使用int类型的input

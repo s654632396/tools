@@ -17,17 +17,17 @@ type SelTree struct {
 	nodes []INode
 }
 
-
 // Quest Ask提问函数结构体
 type Quest func(...IInput) (answer IInput)
+
 // Judge 节点判断函数结构体
 type Judge func(self INode, args []IInput) bool
 
-func (Quest) RfType() RegisterFuncType  {
+func (Quest) RfType() RegisterFuncType {
 	return RegisterFuncTypeQuest
 }
 
-func (Judge) RfType() RegisterFuncType  {
+func (Judge) RfType() RegisterFuncType {
 	return RegisterFuncTypeJudge
 }
 
@@ -49,7 +49,7 @@ func (dt *SelTree) Init(root INode) *SelTree {
 
 // Link 链接 parentNode 和 childNodes
 // children 为复数不确定节点
-func (dt *SelTree) Link(parent INode, children ...INode)  {
+func (dt *SelTree) Link(parent INode, children ...INode) {
 	for _, child := range children {
 		dt.link(parent, child)
 	}
@@ -90,7 +90,6 @@ func (dt *SelTree) Start() {
 	for {
 		// ask for arguments
 		answer := node.ask()
-
 
 		if answer == nil {
 			panic(`answer invalid: nil`)

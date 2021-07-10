@@ -30,14 +30,13 @@ func TestSelTree_Start(t *testing.T) {
 	nodeGroupD[1] = NewSampleNode().Register(myJudgement()).Register(myQuest())
 	nodeGroupD[2] = NewSampleNode().Register(myJudgement()).Register(myQuest())
 	// 构建节点
-	tree.Link(root, nodeGroupA ...)
+	tree.Link(root, nodeGroupA...)
 	tree.Link(nodeGroupA[0], nodeGroupB...)
 	tree.Link(nodeGroupA[1], nodeGroupC...)
 	tree.Link(nodeGroupA[2], nodeGroupD...)
 	// 运行树
 	tree.Start()
 }
-
 
 func myJudgement() Judge {
 	return func(self INode, args []IInput) bool {

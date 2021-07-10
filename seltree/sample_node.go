@@ -7,17 +7,17 @@ import (
 
 // sampleNode 示例节点
 type sampleNode struct {
-	uuid      string
-	position  int
-	choices   []int
+	uuid     string
+	position int
+	choices  []int
 
 	// 提问函数体, 由ask调用
-	quest	Quest
+	quest Quest
 	// 判断函数体, 由poll调用
-	judge	Judge
+	judge Judge
 
 	// 节点状态
-	state     NodeState
+	state NodeState
 	// 每次poll中的尝试次数
 	attempt int
 }
@@ -62,7 +62,7 @@ func (n *sampleNode) ask() IInput {
 	InputArgs := make([]IInput, 0)
 	InputArgs = append(InputArgs, StringInput{value: "hel"})
 	InputArgs = append(InputArgs, Int64Input{value: 123})
-	return  n.quest(InputArgs...)
+	return n.quest(InputArgs...)
 
 }
 
@@ -78,7 +78,7 @@ func (n *sampleNode) poll(tree *SelTree, args []IInput) INode {
 	var remain = total
 
 	var successPos = -1
-	FOUND:
+FOUND:
 	for remain > 0 {
 		for idx := 0; idx < total; idx++ {
 			pos := n.choices[idx]

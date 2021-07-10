@@ -33,7 +33,7 @@ package seltree
 //		// not empty here
 //	}
 //
-type IInput interface{
+type IInput interface {
 
 	// Resolve 将receiver的value解析到expect上
 	// 参数 interface{} 必须是 receiver.value 类型的指针类型
@@ -46,7 +46,7 @@ type IInput interface{
 // IRegisterFunc 注册函数体接口
 type IRegisterFunc interface {
 	// RfType 获取这个注册函数体的类型
-	RfType()  RegisterFuncType
+	RfType() RegisterFuncType
 }
 
 //INode 节点接口

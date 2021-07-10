@@ -3,6 +3,7 @@ package seltree
 import (
 	"context"
 	"errors"
+	"fmt"
 )
 
 // SelTree 选择树
@@ -22,7 +23,7 @@ type IRegisterFunc interface {
 }
 
 // Quest Ask提问函数结构体
-type Quest func(self INode, args []IInput)
+type Quest func(...IInput) (answer IInput)
 // Judge 节点判断函数结构体
 type Judge func(self INode, args []IInput) bool
 
@@ -82,11 +83,15 @@ func (dt *SelTree) Start() {
 	var node = dt.current()
 
 	for {
-		println(">>>> prepare asking ...")
 		// ask for arguments
 		answer := node.ask()
+		print(">>>> asked: ")
+		fmt.Printf("%#v\n", answer)
+		if answer == nil {
+			panic(`answer invalid: nil`)
+		}
 		// make decisions and get next node
-		node = node.poll(dt, []IInput{answer, "yet_another_argument"})
+		node = node.poll(dt, []IInput{answer, StringInput{value: "yet_another_argument"}})
 		if node == nil {
 			break
 		}
@@ -140,4 +145,69 @@ type INode interface {
 
 //IInput 输入接口
 // TODO
-type IInput interface{}
+type IInput interface{
+	ResolveValue(interface{}) error
+	IsEmpty() bool
+}
+
+
+
+type EmptyInput struct {}
+type NotEmptyInput struct {}
+
+func (receiver EmptyInput) IsEmpty() bool {
+	return true
+}
+func (receiver NotEmptyInput) IsEmpty() bool {
+	return false
+}
+
+type StringInput struct {
+	value string
+	NotEmptyInput
+}
+
+type IntInput struct {
+	value int
+	NotEmptyInput
+}
+
+
+func NewInput(value interface{}) IInput {
+	empty := EmptyInput{}
+	switch v := value.(type) {
+	case int:
+		return  IntInput{ value: v}
+	case string:
+		return  StringInput{ value: v}
+	case nil:
+		return  empty
+	default:
+		panic(`value type not support now`)
+	}
+}
+
+
+func (EmptyInput) ResolveValue(expect interface{}) (err error)  {
+	// don't modify expect
+	// 这是空输入参数
+	// 单纯形式上继承IInput
+	return
+}
+
+func (i StringInput) ResolveValue(expect interface{}) (err error) {
+	if v ,ok := expect.(*string); ok {
+		*v = i.value
+	} else {
+		err = errors.New(`resolve string get unexpected value`)
+	}
+	return
+}
+func (i IntInput) ResolveValue(expect interface{}) (err error) {
+	if v ,ok := expect.(*int); ok {
+		*v = i.value
+	} else {
+		err = errors.New(`resolve int get unexpected value`)
+	}
+	return
+}

@@ -3,8 +3,6 @@ package seltree
 import (
 	"errors"
 	"github.com/google/uuid"
-	"math/rand"
-	"time"
 )
 
 // sampleNode 示例节点
@@ -33,19 +31,24 @@ func NewSampleNode() *sampleNode {
 			// default judgement ,always return false
 			return false
 		},
+		quest: func(input ...IInput) (answer IInput) {
+			// default answer for judge
+			return EmptyInput{}
+		},
 	}
 }
 func (n *sampleNode) Register(registerFunc IRegisterFunc) INode {
 	switch f := registerFunc.(type) {
 	case Quest:
 		n.quest = f
+		return n
 	case Judge:
 		n.judge = f
+		return n
 	default:
 		panic(`unknown register func`)
 	}
 
-	return n
 }
 
 // SetState implements
@@ -55,12 +58,12 @@ func (n *sampleNode) SetState(state NodeState) INode {
 }
 
 func (n *sampleNode) ask() IInput {
-	// 先返回随机数，之后变更为节点询问的自定义函数体的调用
-	// TODO : call node.quest here
-	time.Sleep(time.Nanosecond * 2500)
-	rand.Seed(time.Now().UnixNano())
-	answer := rand.Intn(100)
-	return answer
+	// 设置一些测试用的前置参数给quest方法
+	InputArgs := make([]IInput, 0)
+	InputArgs = append(InputArgs, StringInput{value: "hel"})
+	InputArgs = append(InputArgs, IntInput{value:123})
+	return  n.quest(InputArgs...)
+
 }
 
 func (n *sampleNode) determine(args []IInput) bool {

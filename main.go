@@ -2,6 +2,8 @@ package main
 
 import (
 	"github.com/s654632396/seltree/seltree"
+	"math/rand"
+	"time"
 )
 
 func main() {
@@ -11,16 +13,16 @@ func main() {
 	root := seltree.NewSampleNode()
 	tree.Init(root)
 	// 初始化一些节点数据
-	nodeA1 := seltree.NewSampleNode().Register(myJudgement())
-	nodeA2 := seltree.NewSampleNode().Register(myJudgement())
-	nodeA3 := seltree.NewSampleNode().Register(myJudgement())
-	nodeA4 := seltree.NewSampleNode().Register(myJudgement())
-	nodeB1 := seltree.NewSampleNode().Register(myJudgement())
-	nodeB2 := seltree.NewSampleNode().Register(myJudgement())
-	nodeB3 := seltree.NewSampleNode().Register(myJudgement())
-	nodeC1 := seltree.NewSampleNode().Register(myJudgement())
-	nodeC2 := seltree.NewSampleNode().Register(myJudgement())
-	nodeC3 := seltree.NewSampleNode().Register(myJudgement())
+	nodeA1 := seltree.NewSampleNode().Register(myJudgement()).Register(myQuest())
+	nodeA2 := seltree.NewSampleNode().Register(myJudgement()).Register(myQuest())
+	nodeA3 := seltree.NewSampleNode().Register(myJudgement()).Register(myQuest())
+	nodeA4 := seltree.NewSampleNode().Register(myJudgement()).Register(myQuest())
+	nodeB1 := seltree.NewSampleNode().Register(myJudgement()).Register(myQuest())
+	nodeB2 := seltree.NewSampleNode().Register(myJudgement()).Register(myQuest())
+	nodeB3 := seltree.NewSampleNode().Register(myJudgement()).Register(myQuest())
+	nodeC1 := seltree.NewSampleNode().Register(myJudgement()).Register(myQuest())
+	nodeC2 := seltree.NewSampleNode().Register(myJudgement()).Register(myQuest())
+	nodeC3 := seltree.NewSampleNode().Register(myJudgement()).Register(myQuest())
 
 	// 构建节点
 	tree.Link(root, nodeA1)
@@ -41,22 +43,38 @@ func main() {
 func myJudgement() seltree.Judge {
 	return func(self seltree.INode, args []seltree.IInput) bool {
 
-		var (
-			arg1 int
-			ok   bool
-		)
-		if arg1, ok = args[0].(int); !ok {
-			println("arg1 invalid")
-		}
-		// println(arg1)
-
 		self.SetState(seltree.NodeStateAsked)
 
-		if arg1 <= 10 {
+		var  arg1 int
+		var  arg2 string
+		if args[0].IsEmpty() {
+			return  true
+		}
+		// parsing args
+		if err := args[0].ResolveValue(&arg1); err!= nil {
+			arg1 = 0
+		}
+		if err := args[1].ResolveValue(&arg2); err!= nil {
+			arg2 = ""
+		}
+		println("arg1 = " , arg1, ", arg2=", arg2)
+
+		if arg1 < 10 {
 			return false
 		} else {
 			return true
 		}
 	}
 
+}
+
+// 测试用，询问函数体
+func myQuest() seltree.Quest {
+	return func(preArgs ...seltree.IInput) (answer seltree.IInput) {
+		time.Sleep(time.Nanosecond * 2500)
+		rand.Seed(time.Now().UnixNano())
+		var  v = rand.Intn(50)
+		answer = seltree.NewInput(v)
+		return
+	}
 }

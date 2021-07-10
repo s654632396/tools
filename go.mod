@@ -1,4 +1,4 @@
-module github.com/s654632396/decstree
+module github.com/s654632396/seltree
 
 go 1.16
 

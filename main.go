@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/s654632396/decstree/seltree"
+	"github.com/s654632396/seltree/seltree"
 )
 
 func main() {

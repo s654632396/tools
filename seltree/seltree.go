@@ -3,7 +3,6 @@ package seltree
 import (
 	"context"
 	"errors"
-	"log"
 )
 
 // SelTree 选择树
@@ -92,8 +91,6 @@ func (dt *SelTree) Start() {
 		// ask for arguments
 		answer := node.ask()
 
-		log.Print(">>>> asked: ")
-		log.Printf("%#v\n", answer)
 
 		if answer == nil {
 			panic(`answer invalid: nil`)
@@ -105,7 +102,6 @@ func (dt *SelTree) Start() {
 		}
 	}
 
-	log.Println("seltree is done.")
 }
 
 // current 获取当前节点

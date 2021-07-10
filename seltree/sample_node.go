@@ -61,7 +61,7 @@ func (n *sampleNode) ask() IInput {
 	// 设置一些测试用的前置参数给quest方法
 	InputArgs := make([]IInput, 0)
 	InputArgs = append(InputArgs, StringInput{value: "hel"})
-	InputArgs = append(InputArgs, IntInput{value:123})
+	InputArgs = append(InputArgs, Int64Input{value: 123})
 	return  n.quest(InputArgs...)
 
 }

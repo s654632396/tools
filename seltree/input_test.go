@@ -24,16 +24,6 @@ func TestStringInput_Resolve(t *testing.T) {
 	}
 }
 
-type (
-	OtherThing struct {
-		todo string
-	}
-	AnyThing struct {
-		Desc  string
-		other OtherThing
-	}
-)
-
 func TestIntInput_Resolve(t *testing.T) {
 	// 使用int类型的input
 	var origin int = 1024

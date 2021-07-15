@@ -1,4 +1,4 @@
-module github.com/s654632396/seltree
+module github.com/s654632396/tools
 
 go 1.16
 

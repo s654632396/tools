@@ -17,10 +17,10 @@ echo:
 	@echo "Current Date: "${CurDate}
 
 test-coverage:
-	go test github.com/s654632396/seltree/seltree -cover
+	go test github.com/s654632396/tools/seltree -cover
 
 test: test-coverage
-	go test github.com/s654632396/seltree/seltree -test.v
+	go test github.com/s654632396/tools/seltree -test.v
 
 
 
